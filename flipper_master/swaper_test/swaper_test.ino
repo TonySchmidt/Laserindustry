@@ -45,10 +45,13 @@ void loop() {
     ftduino.motor_set(Ftduino::M3, Ftduino::RIGHT);
   }
   ftduino.motor_set(Ftduino::M3, Ftduino::OFF);
-  //send flipperband on
+  set_output(Ftduino::M2, Ftduino::RIGHT);//send
   ftduino.motor_set(Ftduino::M4, Ftduino::LEFT);
   delay(3000);
   ftduino.motor_set(Ftduino::M4, Ftduino::OFF);
+
+
+
   //wait for slave
     while(!ftduino.input_get(Ftduino::I6)){
     ftduino.motor_set(Ftduino::M4, Ftduino::LEFT);
