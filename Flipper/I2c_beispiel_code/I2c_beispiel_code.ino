@@ -4,6 +4,38 @@
 #define SLAVE1_ADDR 43  // Adresse des ersten Slaves
 #define OUTPUT_PORT Ftduino::O1
 
+//#include "RICv2.h"
+
+
+
+// I1 annahme von presse und weiter zum auftzug drehkreuz
+// I2 anname von flipper drehkreuz
+// I3 presse oben
+// i4 presse unten
+// i5 detektor presse
+// i6 detektor drehkreuz
+// i7 schranke  zu
+// i8 schrnake offen
+
+//m1 schranke
+//m2 presse
+//M3 drehen gummi
+//m4 laufen gummi und presse förderband
+
+//anderer ftdunio
+// M1 drehen swapper
+// m2 förderband swapper
+// M3 hoch runter swapper
+// 07 auf swapper
+// 08 zu swapper
+
+// i1 flipper oben
+// i2 flipper unten
+// i3 flipper front
+// i4 flipper back
+
+//RobotikInterConnect *ric;
+
 void setup() {
   ftduino.init();
   Wire.begin();  // Master am I2C-Bus
@@ -97,6 +129,94 @@ uint16_t read_input_from_slave(uint8_t slave_addr, uint8_t input_port) {
   return (hi << 8) | lo;
 }
 
+void schranke(bool i){
+  if(i){
+    while(!ftduino.input_get(Ftduino::I7)){
+      ftduino.motor_set(Ftduino::M1, Ftduino::RIGHT, Ftduino::MAX);
+    }
+    ftduino.motor_set(Ftduino::M1, Ftduino::OFF,Ftduino::MAX);
+  }
+  else{
+      while(!ftduino.input_get(Ftduino::I8)){
+      ftduino.motor_set(Ftduino::M1, Ftduino::LEFT, Ftduino::MAX);
+      }
+      ftduino.motor_set(Ftduino::M1, Ftduino::OFF, Ftduino::MAX);
+  }
+}
+void presserunter(bool i){
+  if(i){
+    while(!ftduino.input_get(Ftduino::I4)){
+      ftduino.motor_set(Ftduino::M2, Ftduino::RIGHT, Ftduino::MAX);
+    }
+    ftduino.motor_set(Ftduino::M2, Ftduino::OFF,Ftduino::MAX);
+  }
+  else{
+      while(!ftduino.input_get(Ftduino::I3)){
+      ftduino.motor_set(Ftduino::M2, Ftduino::LEFT, Ftduino::MAX);
+      }
+      ftduino.motor_set(Ftduino::M2, Ftduino::OFF, Ftduino::MAX);
+  }
+}
+void drehkreuzgerade(bool gerade){
+  if(gerade){
+    while(!ftduino.input_get(Ftduino::I1)){
+      ftduino.motor_set(Ftduino::M3, Ftduino::RIGHT, Ftduino::MAX);
+    }
+    ftduino.motor_set(Ftduino::M3, Ftduino::OFF,Ftduino::MAX);
+  }
+  else{
+      while(!ftduino.input_get(Ftduino::I2)){
+      ftduino.motor_set(Ftduino::M3, Ftduino::LEFT, Ftduino::MAX);
+      }
+      ftduino.motor_set(Ftduino::M3, Ftduino::OFF, Ftduino::MAX);
+  }
+}
+void motor0aktiv(bool aktiv, int motor, bool right){
+  int y = motor - 1;
+  if(aktiv){
+    if(right){
+      set_output_mode(SLAVE1_ADDR, y, 0x13); // RIGHT
+      set_output_value(SLAVE1_ADDR, y, 255); // volle Geschwindigkeit
+    }else{
+      set_output_mode(SLAVE1_ADDR, y, 0x12); // LEFT
+      set_output_value(SLAVE1_ADDR, y, 255); // volle Geschwindigkeit
+    }
+
+  }else{set_output_mode(SLAVE1_ADDR, y, 0x10);}//OFF
+}
+void motoraktivhaltenbis(int taster, int motor, int right){
+  int motorinput = motor - 1;
+  int tasterinput = taster - 1;
+  //failsafe
+  set_output_mode(SLAVE1_ADDR, motor, 0x10); // OFF
+  bool waiter = true;
+  if(right){
+      while(waiter){
+        if(read_input_from_slave(SLAVE1_ADDR, tasterinput) < 512) {
+          set_output_mode(SLAVE1_ADDR, motorinput, 0x13); // Right
+          set_output_value(SLAVE1_ADDR, motorinput, 255); // volle Geschwindigkeit
+          delay(10);
+        }else{
+          waiter = false;
+      }
+    }
+    set_output_mode(SLAVE1_ADDR, motorinput, 0x10); // OFF
+    set_output_value(SLAVE1_ADDR, motorinput, 0);
+  }else{
+      while(waiter){
+        if(read_input_from_slave(SLAVE1_ADDR, tasterinput) < 512) {
+          set_output_mode(SLAVE1_ADDR, motorinput, 0x12); // LEFT
+          set_output_value(SLAVE1_ADDR, motorinput, 255); // volle Geschwindigkeit
+          delay(10);
+        }else{
+          waiter = false;
+      }
+    }
+    set_output_mode(SLAVE1_ADDR, motorinput, 0x10); // OFF
+    set_output_value(SLAVE1_ADDR, motorinput, 0);
+  }
+}
+  
 
 /* ventile anstueren
 
