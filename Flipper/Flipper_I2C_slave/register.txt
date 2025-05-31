@@ -1,0 +1,100 @@
+I2C-Register, wie sie vom I2cSlave.ino für den ftDuino implementiert werden.
+Werte mit vorangestelltem 0x sind in Hexadezimalschreibweise dargestellt.
+
+Registerbelegungen für Ausgänge O1 bis O8 bzw. M1 bis M4
+--------------------------------------------------------
+0x00 : Ausgangs-Modus O1/M1
+       0x0x - Betrieb als Einzelausgang
+       0x00 - Einzelausgang offen/hochohmig (tristate)
+       0x01 - Einzelausgang gegen +9V geschaltet (High)
+       0x02 - Einzelausgang gegen Masse geschaltet (Low)
+       0x1x - Ausgang mit O2 zum Motorausgang M1 gekoppelt
+       0x10 - Motorausgang ungebremst aus (off)
+       0x11 - Motorausgang gebremst aus (brake)
+       0x12 - Motorausgang linksdrehend an
+       0x13 - Motorausgang rechsdrehend an
+0x01 : Ausgangswert (PWM) O1/M1 von 0 (aus) bis 255 (100% an)
+       Der Zustand des Hardwareausgangs wird beim Schreiben
+       dieses Registers aktualisiert
+0x02 : Ausgangs-Modus O2
+       Der Inhalt dieses Registers wird ignoriert, wenn Ausgangs-Modus O1/M1
+       (Register 0x00) den Wert 0x1x enthält
+       0x00 - Einzelausgang offen/hochohmig (tristate)
+       0x01 - Einzelausgang gegen +9V geschaltet (High)
+       0x02 - Einzelausgang gegen Masse geschaltet (Low)
+0x03 : Ausgangswert (PWM) O2 von 0 (aus) bis 255 (100% an)
+       Der Inhalt dieses Registers wird ignoriert, wenn Ausgangs-Modus O1/M1
+       (Register 0x00) den Wert 0x1x enthält
+       Der Zustand des Hardwareausgangs wird beim Schreiben
+       dieses Registers aktualisiert
+0x04 : Ausgangs-Modus O3/M2, siehe Ausgang-Modus O1 (Register 0x00)
+0x05 : Ausgangswert O3/M2, siehe Ausgangwert O1 (Register 0x01)
+0x06 : Ausgangs-Modus O4, siehe Ausgang-Modus O2 (Register 0x02)
+0x07 : Ausgangswert O4, siehe Ausgangwert O2 (Register 0x03)
+0x08 : Ausgangs-Modus O5/M3, siehe Ausgang-Modus O1 (Register 0x00)
+0x09 : Ausgangswert O5/M3, siehe Ausgangwert O1 (Register 0x01)
+0x0a : Ausgangs-Modus O6, siehe Ausgang-Modus O2 (Register 0x02)
+0x0b : Ausgangswert O6, siehe Ausgangwert O2 (Register 0x03)
+0x0c : Ausgangs-Modus O7/M4, siehe Ausgang-Modus O1 (Register 0x00)
+0x0d : Ausgangswert O7/M4, siehe Ausgangwert O1 (Register 0x01)
+0x0e : Ausgangs-Modus O8, siehe Ausgang-Modus O2 (Register 0x02)
+0x0f : Ausgangswert O8, siehe Ausgangwert O2 (Register 0x03)
+
+Registerbelegungen für Eingänge I1 bis I8
+-----------------------------------------
+Es können maximal die beiden Bytes eines Eingangs in einem gemeinsamen
+I2C-Transfer gelesen werden. Jeder Eingang muss einzeln gelesen werden
+
+0x10 : schreiben: Eingangs-Modus I1
+       0x00 - Spannung
+       0x01 - Widerstand
+       0x02 - Schalter
+       lesen: Eingangswert I1, Low-Byte (LSB)
+0x11 : lesen: Eingangswert I1, High-Byte (MSB)
+0x12 : Eingangs-Modus/Eingangswert I2, siehe Eingangs-Modus I1 (Register 0x10)
+0x13 : Eingangswert I2, siehe Eingangswert I1 (Register 0x11)
+0x14 : Eingangs-Modus/Eingangswert I3, siehe Eingangs-Modus I1 (Register 0x10)
+0x15 : Eingangswert I3, siehe Eingangswert I1 (Register 0x11)
+0x16 : Eingangs-Modus/Eingangswert I4, siehe Eingangs-Modus I1 (Register 0x10)
+0x17 : Eingangswert I4, siehe Eingangswert I1 (Register 0x11)
+0x18 : Eingangs-Modus/Eingangswert I5, siehe Eingangs-Modus I1 (Register 0x10)
+0x19 : Eingangswert I5, siehe Eingangswert I1 (Register 0x11)
+0x1a : Eingangs-Modus/Eingangswert I6, siehe Eingangs-Modus I1 (Register 0x10)
+0x1b : Eingangswert I6, siehe Eingangswert I1 (Register 0x11)
+0x1c : Eingangs-Modus/Eingangswert I7, siehe Eingangs-Modus I1 (Register 0x10)
+0x1d : Eingangswert I7, siehe Eingangswert I1 (Register 0x11)
+0x1e : Eingangs-Modus/Eingangswert I8, siehe Eingangs-Modus I1 (Register 0x10)
+0x1f : Eingangswert I8, siehe Eingangswert I1 (Register 0x11)
+
+Registerbelegungen für Zählereingänge C1 bis C4
+-----------------------------------------------
+
+0x20 : schreiben: Zähler-Modus C1
+       0x00 - aus
+       0x01 - steigende Flanke
+       0x02 - fallende Flanke
+       0x03 - beide Flanken
+       0x04 - Ultraschallsensor aktivieren
+       lesen: Eingangszustand C1
+0x21 : schreiben: Zähler C1 
+       0x00  - Zähler unverändert lassen
+       sonst - Zähler löschen
+       lesen: Zählerstand C1/Ultraschall-Distanz, Low-Byte (LSB)
+0x22 : Zählerstand C1/Ultraschall-Distanz, High-Byte (MSB)
+0x24 : schreiben: Zähler-Modus C2
+       0x00 - aus
+       0x01 - steigende Flanke
+       0x02 - fallende Flanke
+       0x03 - beide Flanken
+       lesen: Eingangszustand C2
+0x25 : schreiben: Zähler C2 
+       0x00  - Zähler unverändert lassen
+       sonst - Zähler löschen
+       lesen: Zählerstand C2, Low-Byte (LSB)
+0x26 : Zählerstand C2, High-Byte (MSB)
+0x28 : Zähler-Modus C3, siehe Zähler-Modus C2 (Register 0x24)
+0x29 : Zählerstand C3, Low-Byte (LSB), siehe Zählerstand C2 (Register 0x25)
+0x2a : Zählerstand C3, High-Byte (MSB), siehe Zählerstand C2 (Register 0x26)
+0x2c : Zähler-Modus C4, siehe Zähler-Modus C2 (Register 0x24)
+0x2d : Zählerstand C4, Low-Byte (LSB), siehe Zählerstand C2 (Register 0x25)
+0x2e : Zählerstand C4, High-Byte (MSB), siehe Zählerstand C2 (Register 0x26)

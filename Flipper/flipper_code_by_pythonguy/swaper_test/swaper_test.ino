@@ -7,6 +7,10 @@
 // i4 presse unten
 // i5 detektor presse
 // i6 detektor drehkreuz
+// i7 dreher front 
+// i8 dreher back
+
+//missing: schranke front back, oben unten flipper; (4)
 
 //m1 föderband presse
 //m2 presse
@@ -16,8 +20,9 @@
 //anderer ftdunio
 // M1 drehen
 // m2 förderband
-// m3 zusammendrücken
-// m4 AUSEIANDERRRR
+//M3 hoch runter
+// 07 auf 
+// 08 zu
 
 //RobotikInterConnect *ric;
 void setup() {
