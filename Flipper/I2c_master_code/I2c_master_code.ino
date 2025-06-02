@@ -8,12 +8,11 @@
 
 
 
-// I1 annahme von presse und weiter zum auftzug drehkreuz
+// I1 annahme von presse 
 // I2 anname von flipper drehkreuz
 // I3 presse oben
 // i4 presse unten
-// i5 detektor presse
-// i6 detektor drehkreuz
+// i5 abgabe aufzug
 // i7 schranke  zu
 // i8 schrnake offen
 
@@ -47,17 +46,9 @@ void setup() {
   }
   delay(100); // Warten, bis Slaves bereit sind
 
-  //schranke(false);
-  //presserunter(false);
-  flipperoben(false);
-  flipperfront(true);
-  delay(100);
-  flipperfront(false);
-  flipperoben(true);
-  Serial.print("3");
-  bandflipperan(true, true);
-  delay(3000);
-  bandflipperan(false, true);
+  setupsequenz();
+  drehkreuzcontrol(1);
+
 }
 
 
@@ -78,12 +69,45 @@ void setup() {
 // m4 = 8
 // Loop mit Beispielen:
 void loop() {
-
-
-
-
-
-
+  schranke(true);
+  //send ready
+  //wait for signal
+  presseband(true, true);
+  delay(4000);
+  presseband(false, true);
+  presserunter(true);
+  delay(200);
+  presserunter(false);
+  schranke(false);//pressung fertig
+  presseband(true, true);
+  delay(5500);
+  presseband(false, true);
+  drehkreuzcontrol(2);//zum flipper
+  bandflipperan(true, true)
+  presseband(true, false);
+  delay(2500);
+  presseband(true, false);
+  delay(2000);
+  bandflipperan(false, true)// am flipper
+  flipperfront(true){
+  zusammendrucken(true);
+  flipperfront(false);
+  zusammendrucken(false); 
+  flipperfront(true);
+  flipperoben(true);//flip abgeschlossen
+  bandflipperan(true, false);
+  delay(500);
+  presseband(true, true);
+  delay(2500);
+  presseband(false, true);
+  bandflipperan(false, false);
+  drehkreuzcontrol(3);//zum aufzug
+  //send go to aufzug
+  //maybe select laser picture here?
+  presseband(true, false);
+  delay(4000);
+  presseband(false, false);
+  drehkreuzcontrol(1);//fertig
 }
 
 // 📦 Funktion: Setzt Modus eines Ausgangs (auch Motor)
@@ -93,7 +117,6 @@ void set_output_mode(uint8_t slave_addr, uint8_t port, uint8_t mode) {
   Wire.write(mode);
   Wire.endTransmission();
 }
-
 // 📦 Funktion: Setzt PWM-Wert eines Ausgangs
 void set_output_value(uint8_t slave_addr, uint8_t port, uint8_t value) {
   Wire.beginTransmission(slave_addr);
@@ -101,7 +124,6 @@ void set_output_value(uint8_t slave_addr, uint8_t port, uint8_t value) {
   Wire.write(value);
   Wire.endTransmission();
 }
-
 // 📦 Funktion: Liest Eingang I1–I8 (port 0–7) vom Slave
 uint16_t read_input_from_slave(uint8_t slave_addr, uint8_t input_port) {
   uint8_t addr = 0x10 + (input_port << 1);  // even register = low byte
@@ -117,7 +139,6 @@ uint16_t read_input_from_slave(uint8_t slave_addr, uint8_t input_port) {
   uint8_t hi = Wire.read();
   return (hi << 8) | lo;
 }
-
 void schranke(bool i){
   if(i){
     while(!ftduino.input_get(Ftduino::I7)){
@@ -181,7 +202,6 @@ void motor0aktiv(bool aktiv, int motor, bool right, bool failsave){
     Serial.println("sollte jezt aus sein");
   }
 }
-
 void flipperfront(bool vorne){
   if(vorne){
     motoraktivhaltenbis(3, 2, true);//flipper nach vorne drehen also m1 zu i3
@@ -189,7 +209,6 @@ void flipperfront(bool vorne){
     motoraktivhaltenbis(4, 2, false);//flipper nach hinten drehen also m1 zu i4
   }
 }
-
 void flipperoben(bool oben){
   if(oben){
   motoraktivhaltenbis(1, 6, false);//flipper runter fahren also m3 left bis i4 gedrückt wird
@@ -236,7 +255,6 @@ void motoraktivhaltenbis(int taster, int motor, int right){
     set_output_value(SLAVE1_ADDR, motorinput, 0);
   }
 }
-
 void bandflipperan(bool aktiv, bool dircetion){
   if(aktiv){
     if(dircetion){
@@ -249,7 +267,70 @@ void bandflipperan(bool aktiv, bool dircetion){
     motor0aktiv(false, 4, true, false); //m2 aus
   }
 }
+void presseband(bool an, bool direction){
+  if(an){
+    if(direction){  
+      ftduino.motor_set(Ftduino::M4, Ftduino::RIGHT, Ftduino::MAX);
+    }else{
+      ftduino.motor_set(Ftduino::M4, Ftduino::LEFT, Ftduino::MAX);
+    }
+  }else{
+    ftduino.motor_set(Ftduino::M4, Ftduino::OFF, Ftduino::MAX);
+  }
+}
+void setupsequenz(){
+  schranke(false);
+  presserunter(false);
+  flipperoben(false);
+  flipperfront(true);
+  delay(100);
+  flipperfront(false);
+  flipperoben(true);
+  Serial.print("3");
+  bandflipperan(true, true);
+  delay(3000);
+  bandflipperan(false, true);
+}
+void drehkreuzcontrol(int position){
+  switch (position) {
+      case 1:
+        //band annahme
+          while(!ftduino.input_get(Ftduino::I1)){
+            ftdunio.motor_set(Ftduino::M3, Ftduino::RIGHT, Ftdunio::MAX);
+          }
+          ftdunio.motor_set(Ftduino::M3, Ftduino::OFF, Ftdunio::MAX);
+          break;
+      case 2:
+        // flipper annahme
+          while(!ftduino.input_get(Ftduino::I2)){
+            ftdunio.motor_set(Ftduino::M3, Ftduino::LEFT, Ftdunio::MAX);
+          }
+          ftdunio.motor_set(Ftduino::M3, Ftduino::OFF, Ftdunio::MAX);
+        break;
+      case 3:
+        //aufzug annahme
+          while(!ftduino.input_get(Ftduino::I5)){
+            ftdunio.motor_set(Ftduino::M3, Ftduino::LEFT, Ftdunio::MAX);
+          }
+          ftdunio.motor_set(Ftduino::M3, Ftduino::OFF, Ftdunio::MAX);
+        break;
+      default:
+          while(!ftduino.input_get(Ftduino::I1)){//band anahmne
+            ftdunio.motor_set(Ftduino::M3, Ftduino::RIGHT, Ftdunio::MAX);
+          }
+          ftdunio.motor_set(Ftduino::M3, Ftduino::OFF, Ftdunio::MAX);
+        break;
+    }
 
+}
+
+void zusammendrucken(bool zu){
+  if(zu){
+    //missing code
+  }else{
+    //missing code
+  }
+}
 
 /* ventile anstueren
 
