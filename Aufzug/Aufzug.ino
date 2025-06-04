@@ -25,7 +25,7 @@ String msg = ric->recv();
   //DO STUFF
   //ftduino.motor_set(Ftduino::M3, Ftduino::LEFT);
   //delay(1500);
-  while (ftduino.input_get(Ftduino::I1)){
+  while (!ftduino.input_get(Ftduino::I1)){
     ftduino.motor_set(Ftduino::M2, Ftduino::LEFT);
   }
   ftduino.motor_set(Ftduino::M2, Ftduino::OFF);
