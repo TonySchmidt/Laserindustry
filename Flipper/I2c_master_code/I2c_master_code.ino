@@ -7,13 +7,20 @@
 //#include "RICv2.h"
 
 
+
+void setupsequenz();  
+void drehkreuzcontrol(int position);  
+void schranke(bool i);
+void presseband(bool an, bool direction);
+void presserunter(bool i);
+void bandflipperan(bool aktiv, bool direction);
 // I1 annahme von presse 
 // I2 anname von flipper drehkreuz
 // I3 presse oben
 // i4 presse unten
 // i5 abgabe aufzug
 // i7 schranke  zu
-// i8 schrnake offen
+// i6 schrnake offen
 
 //m1 schranke
 //m2 presse
@@ -44,9 +51,13 @@ void setup() {
     ftduino.input_set_mode(Ftduino::I1 + i, Ftduino::SWITCH);
   }
   delay(100); // Warten, bis Slaves bereit sind
+  set_output_mode(SLAVE1_ADDR, 6, 0x01); // O7 as HI
+  set_output_value(SLAVE1_ADDR, 6, 255); // turn on O7 to 9V
 
-  setupsequenz();
-  drehkreuzcontrol(1);
+  //setupsequenz();
+  //drehkreuzcontrol(1);
+  set_output_mode(SLAVE1_ADDR, 6, 0x01); // O7 as HI
+  set_output_value(SLAVE1_ADDR, 6, 255); // turn on O7 to 9V
 
 }
 
@@ -78,17 +89,18 @@ void loop() {
   delay(200);
   presserunter(false);
   schranke(false);//pressung fertig
+  /*
   presseband(true, true);
   delay(5500);
   presseband(false, true);
   drehkreuzcontrol(2);//zum flipper
-  bandflipperan(true, true)
+  bandflipperan(true, true);
   presseband(true, false);
   delay(2500);
   presseband(true, false);
   delay(2000);
-  bandflipperan(false, true)// am flipper
-  flipperfront(true){
+  bandflipperan(false, true);// am flipper
+  flipperfront(true);
   zusammendrucken(true);
   flipperfront(false);
   zusammendrucken(false); 
@@ -107,6 +119,7 @@ void loop() {
   delay(4000);
   presseband(false, false);
   drehkreuzcontrol(1);//fertig
+  */
 }
 
 // 📦 Funktion: Setzt Modus eines Ausgangs (auch Motor)
@@ -146,7 +159,7 @@ void schranke(bool i){
     ftduino.motor_set(Ftduino::M1, Ftduino::OFF,Ftduino::MAX);
   }
   else{
-      while(!ftduino.input_get(Ftduino::I8)){
+      while(!ftduino.input_get(Ftduino::I6)){
       ftduino.motor_set(Ftduino::M1, Ftduino::LEFT, Ftduino::MAX);
       }
       ftduino.motor_set(Ftduino::M1, Ftduino::OFF, Ftduino::MAX);
@@ -295,29 +308,29 @@ void drehkreuzcontrol(int position){
       case 1:
         //band annahme
           while(!ftduino.input_get(Ftduino::I1)){
-            ftdunio.motor_set(Ftduino::M3, Ftduino::RIGHT, Ftdunio::MAX);
+            ftduino.motor_set(Ftduino::M3, Ftduino::RIGHT, Ftduino::MAX);
           }
-          ftdunio.motor_set(Ftduino::M3, Ftduino::OFF, Ftdunio::MAX);
+          ftduino.motor_set(Ftduino::M3, Ftduino::OFF, Ftduino::MAX);
           break;
       case 2:
         // flipper annahme
           while(!ftduino.input_get(Ftduino::I2)){
-            ftdunio.motor_set(Ftduino::M3, Ftduino::LEFT, Ftdunio::MAX);
+            ftduino.motor_set(Ftduino::M3, Ftduino::LEFT, Ftduino::MAX);
           }
-          ftdunio.motor_set(Ftduino::M3, Ftduino::OFF, Ftdunio::MAX);
+          ftduino.motor_set(Ftduino::M3, Ftduino::OFF, Ftduino::MAX);
         break;
       case 3:
         //aufzug annahme
           while(!ftduino.input_get(Ftduino::I5)){
-            ftdunio.motor_set(Ftduino::M3, Ftduino::LEFT, Ftdunio::MAX);
+            ftduino.motor_set(Ftduino::M3, Ftduino::LEFT, Ftduino::MAX);
           }
-          ftdunio.motor_set(Ftduino::M3, Ftduino::OFF, Ftdunio::MAX);
+          ftduino.motor_set(Ftduino::M3, Ftduino::OFF, Ftduino::MAX);
         break;
       default:
           while(!ftduino.input_get(Ftduino::I1)){//band anahmne
-            ftdunio.motor_set(Ftduino::M3, Ftduino::RIGHT, Ftdunio::MAX);
+            ftduino.motor_set(Ftduino::M3, Ftduino::RIGHT, Ftduino::MAX);
           }
-          ftdunio.motor_set(Ftduino::M3, Ftduino::OFF, Ftdunio::MAX);
+          ftduino.motor_set(Ftduino::M3, Ftduino::OFF, Ftduino::MAX);
         break;
     }
 
