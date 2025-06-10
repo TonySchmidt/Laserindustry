@@ -4,7 +4,7 @@
 #define SLAVE1_ADDR 43  // Adresse des ersten Slaves
 #define OUTPUT_PORT Ftduino::O1
 
-//#include "RICv2.h"
+#include "RICv2.h"
 
 
 
@@ -51,6 +51,9 @@ void setup() {
     ftduino.input_set_mode(Ftduino::I1 + i, Ftduino::SWITCH);
   }
   delay(100); // Warten, bis Slaves bereit sind
+  ric = new RobotikInterConnect(1);
+  ric->send(255,"Connected to Interconnect");
+  ric->send(255,"Setup");
   set_output_mode(SLAVE1_ADDR, 6, 0x01); // O7 as HI
   set_output_value(SLAVE1_ADDR, 6, 255); // turn on O7 to 9V
 
@@ -58,7 +61,7 @@ void setup() {
   //drehkreuzcontrol(1);
   set_output_mode(SLAVE1_ADDR, 6, 0x01); // O7 as HI
   set_output_value(SLAVE1_ADDR, 6, 255); // turn on O7 to 9V
-
+  ric->send(255,"Setup completed");
 }
 
 
