@@ -4,9 +4,7 @@
 #define SLAVE1_ADDR 43  // Adresse des ersten Slaves
 #define OUTPUT_PORT Ftduino::O1
 
-#include "RICv2.h"
-
-
+//#include "RICv2.h"
 
 void setupsequenz();  
 void drehkreuzcontrol(int position);  
@@ -14,6 +12,7 @@ void schranke(bool i);
 void presseband(bool an, bool direction);
 void presserunter(bool i);
 void bandflipperan(bool aktiv, bool direction);
+void zusammendrucken(bool zu);
 // I1 annahme von presse 
 // I2 anname von flipper drehkreuz
 // I3 presse oben
@@ -43,6 +42,7 @@ void bandflipperan(bool aktiv, bool direction);
 
 void setup() {
   Serial.begin(9600);
+  Serial.println("in setup");
   ftduino.init();
   delay(2000); 
   Wire.begin();  // Master am I2C-Bus
@@ -51,17 +51,17 @@ void setup() {
     ftduino.input_set_mode(Ftduino::I1 + i, Ftduino::SWITCH);
   }
   delay(100); // Warten, bis Slaves bereit sind
-  ric = new RobotikInterConnect(1);
-  ric->send(255,"Connected to Interconnect");
-  ric->send(255,"Setup");
+  //ric = new RobotikInterConnect(1);
+  //ric->send(255,"Connected to Interconnect");
+  //ric->send(255,"Setup");
   set_output_mode(SLAVE1_ADDR, 6, 0x01); // O7 as HI
   set_output_value(SLAVE1_ADDR, 6, 255); // turn on O7 to 9V
-
-  //setupsequenz();
-  //drehkreuzcontrol(1);
+  Serial.println("into setup");
+  setupsequenz();
+  drehkreuzcontrol(1);
   set_output_mode(SLAVE1_ADDR, 6, 0x01); // O7 as HI
   set_output_value(SLAVE1_ADDR, 6, 255); // turn on O7 to 9V
-  ric->send(255,"Setup completed");
+  //ric->send(255,"Setup completed");
 }
 
 
@@ -83,32 +83,41 @@ void setup() {
 // Loop mit Beispielen:
 void loop() {
   schranke(true);
-  //send ready
+  //send 
   //wait for signal
   presseband(true, true);
   delay(4000);
   presseband(false, true);
   presserunter(true);
-  delay(200);
+  delay(50);
   presserunter(false);
   schranke(false);//pressung fertig
-  /*
   presseband(true, true);
   delay(5500);
   presseband(false, true);
-  drehkreuzcontrol(2);//zum flipper
-  bandflipperan(true, true);
+  drehkreuzcontrol(2);//zum flipper^
+
+  bandflipperan(true, false);
+  flipperoben(false);
   presseband(true, false);
   delay(2500);
   presseband(true, false);
-  delay(2000);
+  delay(1000);
   bandflipperan(false, true);// am flipper
+
   flipperfront(true);
+  delay(2000);
   zusammendrucken(true);
+  delay(2000);
   flipperfront(false);
+  delay(2000);
   zusammendrucken(false); 
+  delay(2000);
   flipperfront(true);
-  flipperoben(true);//flip abgeschlossen
+  delay(2000);
+  flipperoben(true);
+  /*//flip abgeschlossen
+  delay(200);
   bandflipperan(true, false);
   delay(500);
   presseband(true, true);
@@ -155,6 +164,7 @@ uint16_t read_input_from_slave(uint8_t slave_addr, uint8_t input_port) {
   return (hi << 8) | lo;
 }
 void schranke(bool i){
+  Serial.println("in schranke");
   if(i){
     while(!ftduino.input_get(Ftduino::I7)){
       ftduino.motor_set(Ftduino::M1, Ftduino::RIGHT, Ftduino::MAX);
@@ -225,14 +235,16 @@ void flipperfront(bool vorne){
   }
 }
 void flipperoben(bool oben){
+  Serial.println("in flipperoben");
   if(oben){
   motoraktivhaltenbis(1, 6, false);//flipper runter fahren also m3 left bis i4 gedrückt wird
   }else{
-  motoraktivhaltenbis(2, 6, true);//flipper runter fahren also m3 left bis i4 gedrückt wird
+  motoraktivhaltenbis(2, 6, true);//flipper runter fahren also m3 left bis i4 gedrückt 
+  Serial.println("in shoud have stopped");
   }
 
 }
-void motoraktivhaltenbis(int taster, int motor, int right){
+void motoraktivhaltenbis(int taster, int motor, bool right){
   int motorinput = motor - 1;
   int tasterinput = taster - 1;
 
@@ -294,6 +306,8 @@ void presseband(bool an, bool direction){
   }
 }
 void setupsequenz(){
+  Serial.println("setup");
+  Serial.println("schrank start false");
   schranke(false);
   presserunter(false);
   flipperoben(false);
@@ -341,9 +355,21 @@ void drehkreuzcontrol(int position){
 
 void zusammendrucken(bool zu){
   if(zu){
-    //missing code
+        Serial.println("zu");
+        //ventil offen aus
+        set_output_mode(SLAVE1_ADDR, 7, 0x10); // OFF
+        set_output_value(SLAVE1_ADDR, 7, 0);
+        //ventil zusammen an
+        set_output_mode(SLAVE1_ADDR, 8, 0x13); // Right
+        set_output_value(SLAVE1_ADDR, 8, 255); // volle Geschwindigkeit
   }else{
-    //missing code
+        Serial.println("auf");
+        //ventil zusammen aus
+      	set_output_mode(SLAVE1_ADDR, 8, 0x10); // OFF
+        set_output_value(SLAVE1_ADDR, 8, 0);
+        //ventil auseinander an
+        set_output_mode(SLAVE1_ADDR, 7, 0x13); // Right
+        set_output_value(SLAVE1_ADDR, 7, 255); // volle Geschwindigkeit
   }
 }
 

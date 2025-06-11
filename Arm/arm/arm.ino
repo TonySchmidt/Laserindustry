@@ -1,7 +1,7 @@
 #include <FtduinoSimple.h>
 /*
 Taster:
-I1 unten
+I1 unten und laser fertig
 I2 oben
 I3 hinten
 I4 vorne
@@ -61,7 +61,9 @@ void loop() {
   ftduino.motor_set(Ftduino::M2, Ftduino::OFF);
   Serial.println("I3 erreicht, M2 gestoppt 12");
 
-  //wait for laser end
+  while(!ftduino.input_get(Ftduino::I1)){
+    delay(100);
+  }
   //send und taster wait for laser end
 
   movetofront();//nach lasern wieder rein
