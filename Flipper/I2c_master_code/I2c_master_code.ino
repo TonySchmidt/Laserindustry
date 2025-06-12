@@ -57,6 +57,9 @@ void setup() {
   set_output_mode(SLAVE1_ADDR, 6, 0x01); // O7 as HI
   set_output_value(SLAVE1_ADDR, 6, 255); // turn on O7 to 9V
   Serial.println("into setup");
+  flipperoben(true);//debug
+  flipperoben(false);//debug
+  flipperoben(true);//debug
   setupsequenz();
   drehkreuzcontrol(1);
   set_output_mode(SLAVE1_ADDR, 6, 0x01); // O7 as HI
