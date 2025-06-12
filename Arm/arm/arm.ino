@@ -1,4 +1,5 @@
 #include <FtduinoSimple.h>
+#include "RICv2.h"
 /*
 Taster:
 I1 unten und laser fertig
@@ -16,11 +17,15 @@ M3 hoch runter
 M4 drehen
 */
 
+RobotikInterConnect *ric;
+
 bool on = false;
 void setup() {
   Serial.begin(9600);
   Serial.println("Starte Initialposition...");
-
+  ric = new RobotikInterConnect(3);
+  ric->send(255,"Connected to Interconnect");
+  ric->send(255,"Setup");
   moveback();
   moveup();
   movetostart();
@@ -30,11 +35,12 @@ void setup() {
   ftduino.motor_set(Ftduino::M3, Ftduino::OFF);
   Serial.println("Initialisierung abgeschlossen");
   //send ready
+  ric->send(255,"Setup completed");
 }
 
 void loop() {
-  //send ready
-  //wait for command
+  ric->send(255,"READY");
+  String msg = ric->recv();
   Magnet(true);
   delay(3000);
   Serial.println("erhebe Arm (M3 hoch) etwas");
@@ -60,7 +66,7 @@ void loop() {
   delay(15000);
   ftduino.motor_set(Ftduino::M2, Ftduino::OFF);
   Serial.println("I3 erreicht, M2 gestoppt 12");
-
+  ric->send(255, "Bereit zum Lasern");
   while(!ftduino.input_get(Ftduino::I1)){
     delay(100);
   }
@@ -96,8 +102,8 @@ void loop() {
   //send ok
   delay(1000);
   moveup();
-
   moveback();
+  ric->send(10, msg);
 
   Serial.println("Drehe M4 (zurück) bis I7 erreicht (Startposition)");
   while (!ftduino.input_get(Ftduino::I7)) {
