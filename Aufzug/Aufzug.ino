@@ -24,7 +24,7 @@ void loop() {
   ric->send(255,"READY");
   String msg = ric->recv();
   ftduino.motor_set(Ftduino::M2, Ftduino::LEFT);
-  delay(2000);//roll time till going up
+  delay(1500);//roll time till going up
   ftduino.motor_set(Ftduino::M2, Ftduino::OFF);
   go_up();
   ftduino.motor_set(Ftduino::M2, Ftduino::LEFT);

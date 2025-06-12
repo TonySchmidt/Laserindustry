@@ -18,9 +18,7 @@ void setup() {
   ftduino.init();
   ric->send(255,"Connected to Interconnect");
   ric->send(255,"Setup");
-  Serial.begin(9600);
   delay(3000);
-  Serial.println("in setup");
   schranke(true);
   presserunter(false);
   ric->send(255,"Setup completed");
@@ -39,9 +37,9 @@ delay(500);
 presserunter(false);
 schranke(false);
 presseband(true, true);
-delay(4000);
-ric->send(2, msg);
 delay(2000);
+ric->send(2, msg);
+delay(4000);
 presseband(false, true);
 schranke(true);
 }
@@ -57,7 +55,6 @@ schranke(true);
 
 //Tonys X unnötigen Funktionen
 void schranke(bool i){
-  Serial.println("in schranke");
   if(i){
     while(!ftduino.input_get(Ftduino::I7)){
       ftduino.motor_set(Ftduino::M1, Ftduino::RIGHT, Ftduino::MAX); //SchRaNKE auf
