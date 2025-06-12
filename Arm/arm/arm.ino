@@ -53,7 +53,7 @@ void loop() {
   delay(500);
 
   ftduino.motor_set(Ftduino::M3, Ftduino::LEFT); // arm etwas runter
-  delay(3000);
+  delay(3500);
   ftduino.motor_set(Ftduino::M3, Ftduino::OFF);
 
   ftduino.motor_set(Ftduino::M2, Ftduino::LEFT); // arm back

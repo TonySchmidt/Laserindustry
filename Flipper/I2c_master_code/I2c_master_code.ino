@@ -240,7 +240,7 @@ void flipperoben(bool oben){
   motoraktivhaltenbis(1, 6, false);//flipper runter fahren also m3 left bis i4 gedrückt wird
   }else{
   motoraktivhaltenbis(2, 6, true);//flipper runter fahren also m3 left bis i4 gedrückt 
-  Serial.println("in shoud have stopped");
+  Serial.println("in should have stopped");
   }
 
 }
