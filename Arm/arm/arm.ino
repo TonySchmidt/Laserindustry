@@ -24,9 +24,13 @@ void setup() {
   Serial.begin(9600);
   Serial.println("Starte Initialposition...");
   ric = new RobotikInterConnect(3);
-  ric->send(255,"Connected to Interconnect");
+  ric->send(255,"test1");
+  ric->send(255,"Connecteric->sendd to Interconnect");
+  ric->send(255,"test2");
   ric->send(255,"Setup");
+  ric->send(255,"test3");
   moveback();
+  ric->send(255,"test4");
   moveup();
   movetostart();
   movedown();
@@ -43,11 +47,7 @@ void loop() {
   String msg = ric->recv();
   Magnet(true);
   delay(3000);
-  Serial.println("erhebe Arm (M3 hoch) etwas");
-  ftduino.motor_set(Ftduino::M3, Ftduino::RIGHT); // arm etwashoch
-  delay(4000);
-  ftduino.motor_set(Ftduino::M3, Ftduino::OFF);
-  Serial.println("etwas hoch fertig"); 
+  moveupabit();
 
   moveup();
 
@@ -63,56 +63,20 @@ void loop() {
   ftduino.motor_set(Ftduino::M3, Ftduino::OFF);
 
   ftduino.motor_set(Ftduino::M2, Ftduino::LEFT); // arm back
-  delay(15000);
+
   ftduino.motor_set(Ftduino::M2, Ftduino::OFF);
   Serial.println("I3 erreicht, M2 gestoppt 12");
   ric->send(255, "Bereit zum Lasern");
   while(!ftduino.input_get(Ftduino::I1)){
     delay(100);
   }
-  //send und taster wait for laser end
-
-  movetofront();//nach lasern wieder rein
-
-  Magnet(true);
-  delay(1000);
-  ftduino.motor_set(Ftduino::M3, Ftduino::RIGHT); // arm etwas hoch
-  delay(5000);
-  ftduino.motor_set(Ftduino::M3, Ftduino::OFF);
 
   moveback();
 
-  moveup();
-
-  Serial.println("Drehe M4 (zurück) bis I5 erreicht (abgabe)");
-  while (!ftduino.input_get(Ftduino::I5)) {
-    ftduino.motor_set(Ftduino::M4, Ftduino::RIGHT); // arm to abgabe
-  }
-  ftduino.motor_set(Ftduino::M4, Ftduino::OFF);
-  Serial.println("I5 erreicht, M4 gestoppt");
-
-  ftduino.motor_set(Ftduino::M2, Ftduino::RIGHT); // arm vor
-  delay(6000);
-  ftduino.motor_set(Ftduino::M2, Ftduino::OFF);
-  delay(500);
-  Magnet(false);
-  //send go
-  movedown();
-
-  //send ok
-  delay(1000);
-  moveup();
-  moveback();
-  ric->send(10, msg);
-
-  Serial.println("Drehe M4 (zurück) bis I7 erreicht (Startposition)");
-  while (!ftduino.input_get(Ftduino::I7)) {
-    ftduino.motor_set(Ftduino::M4, Ftduino::LEFT); // arm to startpos
-  }
-  ftduino.motor_set(Ftduino::M4, Ftduino::OFF);
-  Serial.println("I7 erreicht, M4 gestoppt");
+  movetostart();
   
   movedown();
+
 }
 
 void Magnet(bool on){
@@ -173,15 +137,6 @@ void movetolaser(){
   Serial.println("I6 erreicht, M4 gestoppt 6"); 
 }
 
-void movetoabgabe(){
-  Serial.println("Drehe M4 (zurück) bis I5 erreicht (abgabe)");
-  while (!ftduino.input_get(Ftduino::I5)) {
-    ftduino.motor_set(Ftduino::M4, Ftduino::RIGHT); // arm to abgabe
-  }
-  ftduino.motor_set(Ftduino::M4, Ftduino::OFF);
-  Serial.println("I5 erreicht, M4 gestoppt");
-}
-
 void moveback(){
   Serial.println("Fahre M2 (zurück) bis I3 erreicht");
   while (!ftduino.input_get(Ftduino::I3)) {
@@ -198,4 +153,5 @@ void movetofront(){
   }
   ftduino.motor_set(Ftduino::M2, Ftduino::OFF);
   Serial.println("I4 erreicht, M2 gestoppt 10");
+
 }

@@ -3,9 +3,9 @@
 /*
 M1 Aufzug
 M2 Förderband
-M3 Licht-Lichtschranke füge hinzu wenn lcihtschranke verwendet wird
-M4 Förderband to HRL
-I1 Lichtschranke 
+M3 Licht-Lichtschranke füge hinzu wenn lcihtschranke verwendet wird nicht genutzt
+M4 Förderband to HRL nicht genutzt
+I1 Lichtschranke Nicht genuzt
 I2 Stop unten
 I3 Stop oben
 */
@@ -16,7 +16,10 @@ ric = new RobotikInterConnect(2);
 ric->send(255,"Connected to Interconnect");
 ric->send(255,"Setup");
 go_down();
+aufzug_unten(true);
+aufzug_unten(false);
 ric->send(255,"Setup completed");
+
 
 }
 void loop() {
@@ -50,3 +53,23 @@ void go_up(){
   }
   ftduino.motor_set(Ftduino::M1, Ftduino::OFF);
 }
+
+
+String aufzug_unten(bool t_f){
+  String oben_unten = "";
+    if (t_f == true){
+    while (!ftduino.input_get(Ftduino::I2)){
+      ftduino.motor_set(Ftduino::M1, Ftduino::LEFT);
+    }
+    ftduino.motor_set(Ftduino::M1, Ftduino::OFF);  
+    oben_unten = "unten";
+  }
+  else{
+    while (!ftduino.input_get(Ftduino::I3)){
+      ftduino.motor_set(Ftduino::M1, Ftduino::RIGHT);
+    }
+    ftduino.motor_set(Ftduino::M1, Ftduino::OFF);
+    oben_unten = "oben";
+  }
+  return "oben_unten";
+  }
