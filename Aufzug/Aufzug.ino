@@ -3,9 +3,7 @@
 /*
 M1 Aufzug
 M2 Förderband
-M3 Licht-Lichtschranke füge hinzu wenn lcihtschranke verwendet wird
 M4 Förderband to HRL
-I1 Lichtschranke 
 I2 Stop unten
 I3 Stop oben
 */
@@ -23,16 +21,16 @@ void loop() {
 
   ric->send(255,"READY");
   String msg = ric->recv();
-  ftduino.motor_set(Ftduino::M2, Ftduino::LEFT);
+  ftduino.motor_set(Ftduino::M2, Ftduino::RIGHT);
   delay(1500);//roll time till going up
   ftduino.motor_set(Ftduino::M2, Ftduino::OFF);
   go_up();
-  ftduino.motor_set(Ftduino::M2, Ftduino::LEFT);
+  ftduino.motor_set(Ftduino::M2, Ftduino::RIGHT);
 //  ftduino.motor_set(Ftduino::M4, Ftduino::LEFT);
   delay(4000);
   ftduino.motor_set(Ftduino::M2, Ftduino::OFF);     
   delay(5000);
-  ric->send(3,"msg");
+//  ric->send(3,"msg");
 //  ftduino.motor_set(Ftduino::M4, Ftduino::OFF);
   go_down();
 }
