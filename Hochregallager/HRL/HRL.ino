@@ -71,6 +71,7 @@ void loop() {
    
 
     if (msg == "GO") {
+      ric->send(255,"connected to programm"); 
       int i = 0;
       for ( i=0; i < 7; i++) {
         if (hrl[i] == 0) break;

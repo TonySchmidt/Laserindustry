@@ -28,12 +28,12 @@ void loop() {
   ftduino.motor_set(Ftduino::M2, Ftduino::OFF);
   go_up();
   ftduino.motor_set(Ftduino::M2, Ftduino::LEFT);
-  ftduino.motor_set(Ftduino::M4, Ftduino::LEFT);
+//  ftduino.motor_set(Ftduino::M4, Ftduino::LEFT);
   delay(4000);
   ftduino.motor_set(Ftduino::M2, Ftduino::OFF);     
   delay(5000);
   ric->send(3,"msg");
-  ftduino.motor_set(Ftduino::M4, Ftduino::OFF);
+//  ftduino.motor_set(Ftduino::M4, Ftduino::OFF);
   go_down();
 }
 
