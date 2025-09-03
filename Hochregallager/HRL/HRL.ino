@@ -407,13 +407,17 @@ void fach0_auslagern(){
 }
 //einlager funktionen
 void fach0_einlagern(){
+   ric->send(255,"1");
   while(!ftduino.input_get(Ftduino::I5)){
   ftduino.motor_set(Ftduino::M3, Ftduino::RIGHT);//arm hoch
   }
+   ric->send(255,"1/2");
   ftduino.motor_set(Ftduino::M3, Ftduino::OFF);
   ftduino.motor_set(Ftduino::M3, Ftduino::RIGHT);//arm höher
   delay(2000);
+   ric->send(255,"2");
   ftduino.motor_set(Ftduino::M3, Ftduino::OFF);
+   ric->send(255,"3");
 
   while(!ftduino.input_get(Ftduino::I8)){
   ftduino.motor_set(Ftduino::M4, Ftduino::LEFT);//arm vorne
@@ -423,12 +427,13 @@ void fach0_einlagern(){
   ftduino.motor_set(Ftduino::M3, Ftduino::LEFT);// arm etwas runter(einlagern)
   delay(1500);
   ftduino.motor_set(Ftduino::M3, Ftduino::OFF);
-
+ ric->send(255,"4");
   while(!ftduino.input_get(Ftduino::I6)){
   ftduino.motor_set(Ftduino::M4, Ftduino::RIGHT);//arm vorne hinten
   }
   ftduino.motor_set(Ftduino::M4, Ftduino::OFF);
   //eingelagert senden
+   ric->send(255,"5");
 }
 void fach1_einlagern(){
   while(!ftduino.input_get(Ftduino::I7)){
@@ -638,163 +643,21 @@ void annehmen(){
 }
 
 void armsetup() {
+  ric->send(255,"Setup1");
   while(!ftduino.input_get(Ftduino::I6)){
     ftduino.motor_set(Ftduino::M4, Ftduino::RIGHT);//arm hinten
     }
     ftduino.motor_set(Ftduino::M4, Ftduino::OFF);
-
+  ric->send(255,"Setup2");
   while(!ftduino.input_get(Ftduino::I4)){
     ftduino.motor_set(Ftduino::M3, Ftduino::LEFT);//arm runter
     }
     ftduino.motor_set(Ftduino::M3, Ftduino::OFF);
-    
+  ric->send(255,"Setup3");
   while(!ftduino.input_get(Ftduino::I1)){
     ftduino.motor_set(Ftduino::M2, Ftduino::LEFT);//arm anfang
   }
     ftduino.motor_set(Ftduino::M2, Ftduino::OFF);
+  ric->send(255,"Setup4");
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
