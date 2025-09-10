@@ -19,9 +19,8 @@ void setup() {
 ric = new RobotikInterConnect(2);
 ric->send(255,"Connected to Interconnect");
 ric->send(255,"Setup");
-go_down();
 aufzug_unten(true);
-aufzug_unten(false);
+
 ric->send(255,"Setup completed");
 
 
@@ -31,15 +30,15 @@ void loop() {
   ric->send(255,"READY");
   String msg = ric->recv();
   ftduino.motor_set(Ftduino::M2, Ftduino::RIGHT);
-  delay(1500);//roll time till going up
+  delay(2500);//roll time till going up
   ftduino.motor_set(Ftduino::M2, Ftduino::OFF);
   go_up();
   ftduino.motor_set(Ftduino::M2, Ftduino::RIGHT);
   ftduino.motor_set(Ftduino::M4, Ftduino::LEFT);
-  delay(4000);
+  delay(7000);
   ftduino.motor_set(Ftduino::M2, Ftduino::OFF);     
-  delay(5000);
-//  ric->send(3,"msg");
+  delay(1000);
+  ric->send(3,"msg");
   ftduino.motor_set(Ftduino::M4, Ftduino::OFF);
   go_down();
 }
