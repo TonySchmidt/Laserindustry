@@ -1,7 +1,6 @@
 
 #include <FtduinoSimple.h>
 #include "RICv2.h"
-int color;
 RobotikInterConnect *ric;
 /*
 
@@ -21,17 +20,13 @@ I7  regal unten
 I8 Arm vorne stopp
 */
 
-/*
-
-
-
-*/
-
 void armsetup();
+void armsetup2();
 void annehmen();
 void einlagern(int fach);
 void ausgeben();
 void auslagern(int fach);
+
 void fach0_auslagern();
 void fach1_auslagern();
 void fach2_auslagern();
@@ -48,7 +43,7 @@ void fach4_einlagern();
 void fach5_einlagern();   
 void fach6_einlagern();     
 
-int hrl[7] = { 0, 0, 0, 0, 0, 0, 0 };
+//int hrl[7] = { 0, 0, 0, 0, 0, 0, 0 };
 
 void setup() {
   ric = new RobotikInterConnect(10);
@@ -56,17 +51,24 @@ void setup() {
   ric->send(255,"Setup main");
   armsetup();
   ric->send(255,"Setup completed");
-
+  /*
   for (int i=0; i < 7; i++) {
       //request new from maschienen lager
       ric->send(1,"GO"); 
   }
+  */
 }
 
 void loop() {
-  armsetup();
+  armsetup2();
   ric->send(255,"READY");
   String msg = ric->recv();
+  if (msg == "GO") {
+    annehmen();
+    fach0_einlagern();   
+    armsetup2();
+  }
+  /*
   color = atoi(&msg[2]);
     msg[2] = 0; 
    
@@ -86,7 +88,7 @@ void loop() {
     }
 
 
-    } else/* if (msg == "OD")*/ {
+    } else if (msg == "OD") {
       //output order
       int i = 0;
       for (i=0; i < 7; i++) {
@@ -105,6 +107,7 @@ void loop() {
       
   
     }
+  */
 }//loop
 
 
@@ -171,7 +174,7 @@ void auslagern(int fach){
 
 //einlager funktion
 void einlagern(int fach){
-  armsetup();
+  armsetup2();
     switch (fach){
       
       case 0:
@@ -246,7 +249,7 @@ void fach6_auslagern(){
   }
   ftduino.motor_set(Ftduino::M4, Ftduino::OFF);
   ausgeben();
-  armsetup();
+  armsetup2();
 }
 void fach5_auslagern(){
   while(!ftduino.input_get(Ftduino::I3)){
@@ -269,7 +272,7 @@ void fach5_auslagern(){
   }
   ftduino.motor_set(Ftduino::M4, Ftduino::OFF);
   ausgeben();
-  armsetup();
+  armsetup2();
 }
 void fach4_auslagern(){
   while(!ftduino.input_get(Ftduino::I2)){
@@ -302,7 +305,7 @@ void fach4_auslagern(){
   }
   ftduino.motor_set(Ftduino::M4, Ftduino::OFF);
   ausgeben();
-  armsetup();
+  armsetup2();
 }
 void fach3_auslagern(){
   while(!ftduino.input_get(Ftduino::I2)){
@@ -329,7 +332,7 @@ void fach3_auslagern(){
   }
   ftduino.motor_set(Ftduino::M4, Ftduino::OFF);
   ausgeben();
-  armsetup();
+  armsetup2();
 }
 void fach2_auslagern(){
   while(!ftduino.input_get(Ftduino::I2)){
@@ -355,7 +358,7 @@ void fach2_auslagern(){
   }
   ftduino.motor_set(Ftduino::M4, Ftduino::OFF);
   ausgeben();
-  armsetup();
+  armsetup2();
 }
 void fach1_auslagern(){
   while(!ftduino.input_get(Ftduino::I7)){
@@ -381,7 +384,7 @@ void fach1_auslagern(){
   }
   ftduino.motor_set(Ftduino::M4, Ftduino::OFF);
   ausgeben();
-  armsetup();
+  armsetup2();
 }
 void fach0_auslagern(){
   while(!ftduino.input_get(Ftduino::I5)){
@@ -403,7 +406,7 @@ void fach0_auslagern(){
   }
   ftduino.motor_set(Ftduino::M4, Ftduino::OFF);
   ausgeben();
-  armsetup();
+  armsetup2();
 }
 //einlager funktionen
 void fach0_einlagern(){
@@ -621,10 +624,10 @@ void ausgeben(){
   ftduino.motor_set(Ftduino::M4, Ftduino::LEFT);//arm vorne
   
   ftduino.motor_set(Ftduino::M4, Ftduino::OFF);
-  armsetup();
+  armsetup2();
 }
 void annehmen(){
-  armsetup();
+  armsetup2();
   while(!ftduino.input_get(Ftduino::I8)){
     ftduino.motor_set(Ftduino::M4, Ftduino::LEFT);//arm vorne
   }
@@ -659,5 +662,24 @@ void armsetup() {
   }
     ftduino.motor_set(Ftduino::M2, Ftduino::OFF);
   ric->send(255,"Setup4 arm anfang");
+}
+
+void armsetup2() {
+  //ric->send(255,"Setup1 arm");
+  while(!ftduino.input_get(Ftduino::I6)){
+    ftduino.motor_set(Ftduino::M4, Ftduino::RIGHT);//arm hinten
+    }
+    ftduino.motor_set(Ftduino::M4, Ftduino::OFF);
+  //ric->send(255,"Setup2 arm hinten");
+  while(!ftduino.input_get(Ftduino::I4)){
+    ftduino.motor_set(Ftduino::M3, Ftduino::LEFT);//arm runter
+    }
+    ftduino.motor_set(Ftduino::M3, Ftduino::OFF);
+  //ric->send(255,"Setup3 arm runter");
+  while(!ftduino.input_get(Ftduino::I1)){
+    ftduino.motor_set(Ftduino::M2, Ftduino::LEFT);//arm anfang
+  }
+    ftduino.motor_set(Ftduino::M2, Ftduino::OFF);
+  //ric->send(255,"Setup4 arm anfang");
 }
 
