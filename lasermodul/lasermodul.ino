@@ -3,12 +3,12 @@
 RobotikInterConnect *ric;
 
 /*
-druckluft
-clamp auf
-clamp zu
-laser taster I1
+druckluft M4
+clamp auf M3
+clamp zu M2
+laser taster I8
 
-förderband
+förderband M1
 
 Ablauf: 
 arm bringt zu laser
@@ -34,28 +34,38 @@ void loop() {
   ric->send(255,"READY");
   String msg = ric->recv();
   clampauf(false);
-  while (!ftduino.input_get(Ftduino::I1)){}
+  while (!ftduino.input_get(Ftduino::I8)){}
   ric->send(255,"arm_back");//replace with arm
   delay(5000);
-  while (!ftduino.input_get(Ftduino::I1)){}
+  while (!ftduino.input_get(Ftduino::I8)){}
   clampauf(true);
+  forderband(true);
+  delay(5000);
+  ric->send(2,"GO");
+  forderband(false);
+  delay(10000);
+  clampauf(false);
 
 }
 
 
 void clampauf(bool t_f){
+    ftduino.motor_set(Ftduino::M4, Ftduino::LEFT);
     if (t_f == true){
-    while (!ftduino.input_get(Ftduino::I2)){
-      ftduino.motor_set(Ftduino::M1, Ftduino::LEFT);
-    }
-    ftduino.motor_set(Ftduino::M1, Ftduino::OFF);  
+    ftduino.motor_set(Ftduino::M2, Ftduino::OFF);
+    ftduino.motor_set(Ftduino::M3, Ftduino::LEFT);
+    delay(1000);
+    ftduino.motor_set(Ftduino::M3, Ftduino::OFF);
   }
   else{
-    while (!ftduino.input_get(Ftduino::I3)){
-      ftduino.motor_set(Ftduino::M1, Ftduino::RIGHT);
-    }
-    ftduino.motor_set(Ftduino::M1, Ftduino::OFF);
+      ftduino.motor_set(Ftduino::M2, Ftduino::RIGHT);
+      delay(1000);
+      ftduino.motor_set(Ftduino::M2, Ftduino::OFF);
   }
+  ftduino.motor_set(Ftduino::M4, Ftduino::OFF);
+  
+
+
 }
 
 void forderband(bool t_f){
